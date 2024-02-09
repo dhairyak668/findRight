@@ -1,0 +1,361 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309app.findright.User</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (coms309app.findright.User)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    8.3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    1.5%
+  </span>
+  <span class="absValue">
+    (1/66)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309app.findright.User;
+&nbsp;
+&nbsp;
+&nbsp;import coms309app.findright.ServiceProvider.ServiceProvider;
+&nbsp;import coms309app.findright.ServiceProvider.ServiceProviderRepository;
+&nbsp;import coms309app.findright.ServiceRequest.ServiceRequest;
+&nbsp;import coms309app.findright.ServiceRequest.ServiceRequestRepository;
+&nbsp;import io.swagger.annotations.*;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/users&quot;)
+&nbsp;@Api(value = &quot;User API&quot;, description = &quot;REST APIs related to managing users.&quot;)
+<b class="fc">&nbsp;public class UserController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ServiceProviderRepository serviceProviderRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ServiceRequestRepository serviceRequestRepository;
+&nbsp;
+&nbsp;    @GetMapping(&quot;all&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get All Users&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;Success|OK&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;Not Found&quot;)
+&nbsp;    })
+&nbsp;    public List&lt;User&gt; getAllUsers() {
+<b class="nc">&nbsp;        return userRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;id/{id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get User by ID&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;Success|OK&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;Not Found&quot;)
+&nbsp;    })
+&nbsp;    public User getUserById(@PathVariable Long id) {
+<b class="nc">&nbsp;        return userRepository.findById(id).orElse(null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;email/{email}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get User by Email&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;Success|OK&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;Not Found&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;User&gt; getUserByEmail(
+&nbsp;            @PathVariable(&quot;email&quot;)
+&nbsp;            @ApiParam(value = &quot;The email address of the user to retrieve.&quot;, example = &quot;user@example.com&quot;)
+&nbsp;            String email) {
+<b class="nc">&nbsp;        User user = userRepository.findByEmail(email).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(user);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;post&quot;)
+&nbsp;    @ApiOperation(value = &quot;Create a New User&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 201, message = &quot;User created successfully&quot;),
+&nbsp;            @ApiResponse(code = 400, message = &quot;Bad Request&quot;)
+&nbsp;    })
+&nbsp;    public User postUser(@RequestBody User newUser) {
+<b class="nc">&nbsp;        userRepository.save(newUser);</b>
+<b class="nc">&nbsp;        return newUser;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //delete user entity
+&nbsp;    @DeleteMapping(&quot;delete_id/{id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Delete User by ID&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 204, message = &quot;User deleted successfully&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;User not found&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;Void&gt; deleteUserById(@PathVariable Long id) {
+&nbsp;        // Check if the user with the given ID exists
+<b class="nc">&nbsp;        if (!userRepository.existsById(id)) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Fetch the user
+<b class="nc">&nbsp;        Optional&lt;User&gt; optionalUser = userRepository.findById(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (optionalUser.isPresent()) {</b>
+<b class="nc">&nbsp;            User user = optionalUser.get();</b>
+&nbsp;
+&nbsp;            // Remove associated service requests
+<b class="nc">&nbsp;            List&lt;ServiceRequest&gt; userRequests = user.getMyRequests();</b>
+<b class="nc">&nbsp;            userRequests.forEach(request -&gt; {</b>
+<b class="nc">&nbsp;                serviceRequestRepository.deleteById(request.getId());</b>
+&nbsp;            });
+&nbsp;
+&nbsp;            // Delete the user
+<b class="nc">&nbsp;            userRepository.deleteById(id);</b>
+<b class="nc">&nbsp;            return ResponseEntity.noContent().build();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @PutMapping(&quot;update/{id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Update User by ID&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;User updated successfully&quot;),
+&nbsp;            @ApiResponse(code = 400, message = &quot;Bad Request&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;User not found&quot;)
+&nbsp;    })
+&nbsp;    public User updateUser(
+&nbsp;            @PathVariable Long id,
+&nbsp;            @RequestBody
+&nbsp;            @ApiParam(value = &quot;Updated user information.&quot;, required = true)
+&nbsp;            User updatedUser) {
+<b class="nc">&nbsp;        User serviceUser = userRepository.findById(id).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (serviceUser != null) {</b>
+<b class="nc">&nbsp;            serviceUser.setName(updatedUser.getName());</b>
+<b class="nc">&nbsp;            serviceUser.setEmail(updatedUser.getEmail());</b>
+<b class="nc">&nbsp;            serviceUser.setPassword(updatedUser.getPassword());</b>
+<b class="nc">&nbsp;            serviceUser.setPhone(updatedUser.getPhone());</b>
+<b class="nc">&nbsp;            serviceUser.setAddress(updatedUser.getAddress());</b>
+<b class="nc">&nbsp;            serviceUser.setZipcode(updatedUser.getZipcode());</b>
+<b class="nc">&nbsp;            userRepository.save(serviceUser);</b>
+<b class="nc">&nbsp;            return serviceUser;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;update/password/{email}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Update User Password by Email&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;Password updated successfully&quot;),
+&nbsp;            @ApiResponse(code = 400, message = &quot;Bad Request&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;User not found&quot;)
+&nbsp;    })
+&nbsp;    public User updateUserPassword(
+&nbsp;            @RequestParam
+&nbsp;            @ApiParam(value = &quot;The new password for the user.&quot;, example = &quot;new_password&quot;, required = true)
+&nbsp;            String password,
+&nbsp;            @PathVariable String email) {
+<b class="nc">&nbsp;        User serviceUser = userRepository.findByEmail(email).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (serviceUser != null) {</b>
+<b class="nc">&nbsp;            serviceUser.setPassword(password);</b>
+<b class="nc">&nbsp;            return userRepository.save(serviceUser);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;add_favorite&quot;)
+&nbsp;    @ApiOperation(value = &quot;Add a Favorite Service Provider to User&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;Favorite added successfully&quot;),
+&nbsp;            @ApiResponse(code = 400, message = &quot;Bad Request&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;User or Service Provider not found&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;?&gt; addFavorite(
+&nbsp;            @RequestParam
+&nbsp;            @ApiParam(value = &quot;The ID of the user.&quot;, example = &quot;123&quot;, required = true)
+&nbsp;            Long user_id,
+&nbsp;            @RequestParam
+&nbsp;            @ApiParam(value = &quot;The ID of the service provider to add as a favorite.&quot;, example = &quot;456&quot;, required = true)
+&nbsp;            Long sp_id) {
+<b class="nc">&nbsp;        User user = userRepository.findById(user_id).orElse(null);</b>
+<b class="nc">&nbsp;        ServiceProvider serviceProvider = serviceProviderRepository.findById(sp_id).orElse(null);</b>
+<b class="nc">&nbsp;        Set&lt;ServiceProvider&gt; favServiceProviders = null;</b>
+<b class="nc">&nbsp;        Set&lt;User&gt; favByUsers = null;</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user != null &amp;&amp; serviceProvider != null) {</b>
+&nbsp;            //add fav SP to user list
+<b class="nc">&nbsp;            favServiceProviders = user.getFavoriteServiceProviders();</b>
+<b class="nc">&nbsp;            favServiceProviders.add(serviceProvider);</b>
+<b class="nc">&nbsp;            userRepository.save(user);</b>
+&nbsp;
+&nbsp;            //add user favorited by to SP list
+<b class="nc">&nbsp;            favByUsers = serviceProvider.getFavoriteByUsers();</b>
+<b class="nc">&nbsp;            favByUsers.add(user);</b>
+<b class="nc">&nbsp;            serviceProviderRepository.save(serviceProvider);</b>
+&nbsp;
+<b class="nc">&nbsp;            return ResponseEntity.ok(user);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;remove_favorite&quot;)
+&nbsp;    @ApiOperation(value = &quot;remove a Favorite Service Provider for a User&quot;, response = User.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;Favorite removed successfully&quot;),
+&nbsp;            @ApiResponse(code = 400, message = &quot;Bad Request. Favorite Does Not Exist&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;User or Service Provider not found&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;?&gt; removeFavorite(
+&nbsp;            @RequestParam
+&nbsp;            @ApiParam(value = &quot;The ID of the user.&quot;, example = &quot;123&quot;, required = true)
+&nbsp;            Long user_id,
+&nbsp;            @RequestParam
+&nbsp;            @ApiParam(value = &quot;The ID of the service provider to remove as a favorite.&quot;, example = &quot;456&quot;, required = true)
+&nbsp;            Long sp_id) {
+<b class="nc">&nbsp;        User user = userRepository.findById(user_id).orElse(null);</b>
+<b class="nc">&nbsp;        ServiceProvider serviceProvider = serviceProviderRepository.findById(sp_id).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user != null &amp;&amp; serviceProvider != null) {</b>
+&nbsp;
+<b class="nc">&nbsp;            Set&lt;ServiceProvider&gt; favServiceProviders = user.getFavoriteServiceProviders();</b>
+<b class="nc">&nbsp;            Set&lt;User&gt; favByUsers  = serviceProvider.getFavoriteByUsers();</b>
+&nbsp;
+&nbsp;            //check if SP is already a fav or not
+<b class="nc">&nbsp;            if(!favServiceProviders.contains(serviceProvider))</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().build();</b>
+&nbsp;
+&nbsp;            //remove fav SP from user list
+<b class="nc">&nbsp;            favServiceProviders.remove(serviceProvider);</b>
+<b class="nc">&nbsp;            userRepository.save(user);</b>
+&nbsp;
+&nbsp;            //remove user favorited by from SP list
+<b class="nc">&nbsp;            favByUsers.remove(user);</b>
+<b class="nc">&nbsp;            serviceProviderRepository.save(serviceProvider);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(user);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{userId}/get_all_favorite&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Favorite Service Providers for User&quot;, response = Set.class)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(code = 200, message = &quot;Success|OK&quot;),
+&nbsp;            @ApiResponse(code = 404, message = &quot;User not found&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;Set&lt;ServiceProvider&gt;&gt; getFavoriteServiceProvidersForUser(@PathVariable Long userId) {
+&nbsp;        // Check if the user with the given ID exists
+<b class="nc">&nbsp;        User user = userRepository.findById(userId).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user != null) {</b>
+&nbsp;            // Return the set of favorite service providers for the user
+<b class="nc">&nbsp;            return ResponseEntity.ok(user.getFavoriteServiceProviders());</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-07 23:06</div>
+</div>
+</body>
+</html>

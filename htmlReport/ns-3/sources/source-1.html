@@ -1,0 +1,230 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ServiceProvider</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309app.findright.ServiceProvider</a>
+</div>
+
+<h1>Coverage Summary for Class: ServiceProvider (coms309app.findright.ServiceProvider)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServiceProvider</td>
+<td class="coverageStat">
+  <span class="percent">
+    55%
+  </span>
+  <span class="absValue">
+    (11/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    65.7%
+  </span>
+  <span class="absValue">
+    (23/35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ServiceProvider$HibernateInstantiator$A0lyGiGm</td>
+  </tr>
+  <tr>
+    <td class="name">ServiceProvider$HibernateProxy$dS9FC0d0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    55%
+  </span>
+  <span class="absValue">
+    (11/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    65.7%
+  </span>
+  <span class="absValue">
+    (23/35)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309app.findright.ServiceProvider;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;import coms309app.findright.Reviews.Review;
+&nbsp;import coms309app.findright.ServiceRequest.ServiceRequest;
+&nbsp;import coms309app.findright.User.User;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import jakarta.validation.constraints.NotEmpty;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;import lombok.Setter;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;
+&nbsp;@Entity
+<b class="fc">&nbsp;@NoArgsConstructor</b>
+&nbsp;@Getter
+<b class="nc">&nbsp;@Setter</b>
+&nbsp;public class ServiceProvider {
+&nbsp;
+<b class="fc">&nbsp;    @Getter</b>
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    @Column(name = &quot;sp_id&quot;)
+&nbsp;    private Long id;
+&nbsp;
+&nbsp;    @NotEmpty
+&nbsp;    @Column(name = &quot;name&quot;, nullable = false)
+<b class="fc">&nbsp;    private String name;</b>
+&nbsp;
+&nbsp;
+&nbsp;    @NotEmpty
+&nbsp;    @Column(name = &quot;email&quot;, unique = true, nullable = false)
+<b class="fc">&nbsp;    private String email;</b>
+&nbsp;
+&nbsp;    @NotEmpty
+&nbsp;    @Column(unique = true)
+&nbsp;    //@Digits(fraction = 0, integer = 10)
+<b class="fc">&nbsp;    private String phoneNumber;</b>
+&nbsp;
+&nbsp;
+&nbsp;    @NotEmpty
+&nbsp;    @Column(name = &quot;password&quot;, nullable = false)
+<b class="fc">&nbsp;    private String password;</b>
+&nbsp;
+&nbsp;    @NotEmpty
+&nbsp;    @Column(nullable = false)
+<b class="fc">&nbsp;    private String address;</b>
+&nbsp;
+&nbsp;    @NotEmpty
+&nbsp;    @Column(nullable = false)
+<b class="fc">&nbsp;    private String zipcode;</b>
+&nbsp;
+<b class="fc">&nbsp;    @ElementCollection</b>
+<b class="fc">&nbsp;    private List&lt;String&gt; servicesOffered = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;    @JsonIgnore</b>
+&nbsp;    @ManyToMany(mappedBy = &quot;favoriteServiceProviders&quot;)
+<b class="nc">&nbsp;    private Set&lt;User&gt; favoriteByUsers = new HashSet&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;    @OneToMany(cascade = CascadeType.ALL)</b>
+&nbsp;    @JoinColumn(name = &quot;my_projects&quot;, referencedColumnName = &quot;sp_id&quot;)
+<b class="fc">&nbsp;    private List&lt;ServiceRequest&gt; myProjects = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;    @OneToMany(mappedBy = &quot;serviceProvider&quot;, cascade = CascadeType.ALL)</b>
+&nbsp;    @JsonIgnore
+<b class="nc">&nbsp;    private List&lt;Review&gt; reviews = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;    private double rating = 0.0;</b>
+&nbsp;
+<b class="fc">&nbsp;    public ServiceProvider(String name, String phoneNumber, String email, String password, String address, String zipcode, List&lt;String&gt; servicesOffered) {</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.phoneNumber = phoneNumber;</b>
+<b class="fc">&nbsp;        this.email = email;</b>
+<b class="fc">&nbsp;        this.address = address;</b>
+<b class="fc">&nbsp;        this.password = password;</b>
+<b class="fc">&nbsp;        this.zipcode = zipcode;</b>
+<b class="fc">&nbsp;        this.servicesOffered = servicesOffered;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    public void addFavoriteBy(User user) {
+<b class="nc">&nbsp;        favoriteByUsers.add(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void removeFavoriteBy(User user) {
+<b class="nc">&nbsp;        favoriteByUsers.remove(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addServiceRequest(ServiceRequest serviceRequest) {
+<b class="nc">&nbsp;        this.myProjects.add(serviceRequest);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void removeServiceRequest(ServiceRequest serviceRequest) {
+<b class="nc">&nbsp;        this.myProjects.remove(serviceRequest);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addReview(Review review) {
+<b class="nc">&nbsp;        this.reviews.add(review);</b>
+<b class="nc">&nbsp;        this.rating = calculateAggregateRating();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public double calculateAggregateRating() {
+<b class="nc">&nbsp;        double totalRating = reviews.stream().mapToInt(Review::getRating).sum();</b>
+<b class="nc">&nbsp;        double averageRating = reviews.isEmpty() ? 0.0 : totalRating / reviews.size();</b>
+<b class="nc">&nbsp;        return Math.round(averageRating * 10.0) / 10.0;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-07 23:06</div>
+</div>
+</body>
+</html>

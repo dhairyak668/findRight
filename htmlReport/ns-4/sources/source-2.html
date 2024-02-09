@@ -1,0 +1,457 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ServiceRequestController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309app.findright.ServiceRequest</a>
+</div>
+
+<h1>Coverage Summary for Class: ServiceRequestController (coms309app.findright.ServiceRequest)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServiceRequestController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.9%
+  </span>
+  <span class="absValue">
+    (1/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4%
+  </span>
+  <span class="absValue">
+    (5/124)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309app.findright.ServiceRequest;
+&nbsp;
+&nbsp;
+&nbsp;//import coms309app.findright.websocket.Message;
+&nbsp;import coms309app.findright.Reviews.Review;
+&nbsp;import coms309app.findright.Reviews.ReviewRepository;
+&nbsp;import coms309app.findright.ServiceProvider.ServiceProvider;
+&nbsp;import coms309app.findright.ServiceProvider.ServiceProviderRepository;
+&nbsp;import coms309app.findright.User.User;
+&nbsp;import coms309app.findright.User.UserRepository;
+&nbsp;import io.swagger.annotations.Api;
+&nbsp;import io.swagger.annotations.ApiOperation;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/service-requests&quot;)
+&nbsp;@Api(value = &quot;Service Request API&quot;, description = &quot;REST APIs related to managing service requests.&quot;)
+&nbsp;
+&nbsp;public class ServiceRequestController {
+&nbsp;
+&nbsp;    private final ServiceRequestRepository serviceRequestRepository;
+&nbsp;    private final UserRepository userRepository;
+&nbsp;    private final ServiceProviderRepository serviceProviderRepository;
+&nbsp;    private final ReviewRepository reviewRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public ServiceRequestController(ServiceRequestRepository serviceRequestRepository,
+&nbsp;                                    UserRepository userRepository,
+&nbsp;                                    ServiceProviderRepository serviceProviderRepository,
+<b class="fc">&nbsp;                                    ReviewRepository reviewRepository) {</b>
+<b class="fc">&nbsp;        this.serviceRequestRepository = serviceRequestRepository;</b>
+<b class="fc">&nbsp;        this.userRepository =userRepository;</b>
+<b class="fc">&nbsp;        this.serviceProviderRepository = serviceProviderRepository;</b>
+<b class="fc">&nbsp;        this.reviewRepository = reviewRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    @ApiOperation(value = &quot;Create a New Service Request&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;ServiceRequest&gt; createServiceRequest(@RequestBody ServiceRequest serviceRequest) {
+<b class="nc">&nbsp;        User user = userRepository.findByEmail(serviceRequest.getRequesterEmail()).orElse(null);</b>
+<b class="nc">&nbsp;        if (user != null) {</b>
+<b class="nc">&nbsp;            serviceRequest.setUser(user); // Set the user for the service request</b>
+<b class="nc">&nbsp;            ServiceRequest savedRequest = serviceRequestRepository.save(serviceRequest);</b>
+<b class="nc">&nbsp;            user.addServiceRequest(savedRequest); // Add the saved request to the user&#39;s list</b>
+<b class="nc">&nbsp;            userRepository.save(user); // Save the user to update the changes</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(savedRequest);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/by-zipcode/{zipCode}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Service Requesters by Zip Code&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;List&lt;ServiceRequest&gt;&gt; getServiceRequestersByZipCode(@PathVariable String zipCode) {
+<b class="nc">&nbsp;        List&lt;ServiceRequest&gt; requesters = serviceRequestRepository.findByZipCode(zipCode);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(requesters);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/by-email/{email}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Service Requests by Email&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;List&lt;ServiceRequest&gt;&gt; getServiceRequestsByEmail(@PathVariable String email) {
+<b class="nc">&nbsp;        List&lt;ServiceRequest&gt; serviceRequests = serviceRequestRepository.findByRequesterEmail(email);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!serviceRequests.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(serviceRequests);</b>
+&nbsp;        } else {
+&nbsp;            // Handle the case when there are no service requests connected to the specified email
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Service Request Details by ID&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;ServiceRequest&gt; getServiceRequestDetails(@PathVariable Long id) {
+&nbsp;        // Check if the service request with the given ID exists
+<b class="nc">&nbsp;        if (!serviceRequestRepository.existsById(id)) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Retrieve and return the service request details
+<b class="nc">&nbsp;        ServiceRequest requester = serviceRequestRepository.findById(id).orElse(null);</b>
+<b class="nc">&nbsp;        if (requester != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(requester);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/all&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get All Service Requests&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;List&lt;ServiceRequest&gt;&gt; getAllServiceRequests() {
+<b class="nc">&nbsp;        List&lt;ServiceRequest&gt; serviceRequests = serviceRequestRepository.findAll();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(serviceRequests);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/by-zip-and-service-type&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Service Requests by Zip Code and Service Type&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;List&lt;ServiceRequest&gt;&gt; getServiceRequestsByZipAndServiceType(
+&nbsp;            @RequestParam String zipCode,
+&nbsp;            @RequestParam String serviceType
+&nbsp;    ) {
+<b class="nc">&nbsp;        List&lt;ServiceRequest&gt; serviceRequests = serviceRequestRepository.findByZipCodeAndServiceTypeNeeded(zipCode, serviceType);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!serviceRequests.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(serviceRequests);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Update Service Request by ID&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;ServiceRequest&gt; updateServiceRequest(@PathVariable Long id, @RequestBody ServiceRequest updatedRequester) {
+&nbsp;        // Check if the service request with the given ID exists
+<b class="nc">&nbsp;        if (!serviceRequestRepository.existsById(id)) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Set the ID for the updated requester
+<b class="nc">&nbsp;        updatedRequester.setId(id);</b>
+&nbsp;
+&nbsp;        // Save the updated requester
+<b class="nc">&nbsp;        ServiceRequest savedRequester = serviceRequestRepository.save(updatedRequester);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(savedRequester);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/delete/{id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Delete Service Request by ID&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; deleteServiceRequest(@PathVariable Long id) {
+&nbsp;        // Check if the service request with the given ID exists
+<b class="nc">&nbsp;        Optional&lt;ServiceRequest&gt; optionalServiceRequest = serviceRequestRepository.findById(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (optionalServiceRequest.isPresent()) {</b>
+<b class="nc">&nbsp;            ServiceRequest serviceRequest = optionalServiceRequest.get();</b>
+<b class="nc">&nbsp;            User user = userRepository.findByEmail(serviceRequest.getRequesterEmail()).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (user != null) {</b>
+&nbsp;                // Remove the service request from the user&#39;s list
+<b class="nc">&nbsp;                user.removeServiceRequest(serviceRequest);</b>
+<b class="nc">&nbsp;                userRepository.save(user);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Delete the service request
+<b class="nc">&nbsp;            serviceRequestRepository.deleteById(id);</b>
+<b class="nc">&nbsp;            return ResponseEntity.noContent().build();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{id}/start-chat&quot;)
+&nbsp;    @ApiOperation(value = &quot;Start a Chat for Service Request by ID&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; startChat(@PathVariable Long id) {
+&nbsp;        // Optional: Check if the service request exists
+<b class="nc">&nbsp;        Optional&lt;ServiceRequest&gt; serviceRequestOptional = serviceRequestRepository.findById(id);</b>
+<b class="nc">&nbsp;        if (!serviceRequestOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(&quot;Service Request not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        ServiceRequest serviceRequest = serviceRequestOptional.get();</b>
+&nbsp;
+&nbsp;        // Optional: Check if there&#39;s already a chat session for this service request
+<b class="nc">&nbsp;        if (serviceRequest.getChatSessionId() != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok().body(&quot;Chat session already exists with ID: &quot; + serviceRequest.getChatSessionId());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Generate a unique chat session ID (could be a UUID or any unique string)
+<b class="nc">&nbsp;        String chatSessionId = UUID.randomUUID().toString();</b>
+<b class="nc">&nbsp;        serviceRequest.setChatSessionId(chatSessionId);</b>
+<b class="nc">&nbsp;        serviceRequestRepository.save(serviceRequest);</b>
+&nbsp;
+&nbsp;        // Return the chat session ID to the client
+<b class="nc">&nbsp;        return ResponseEntity.ok().body(&quot;Chat session started with ID: &quot; + chatSessionId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{request_id}/assign-service-provider/{sp_id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Assign Service Provider to Service Request&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;?&gt; assignServiceProviderToRequest(
+&nbsp;            @PathVariable Long request_id,
+&nbsp;            @PathVariable Long sp_id
+&nbsp;    ) {
+&nbsp;        // Check if the service request with the given ID exists
+<b class="nc">&nbsp;        Optional&lt;ServiceRequest&gt; serviceRequestOptional = serviceRequestRepository.findById(request_id);</b>
+<b class="nc">&nbsp;        if (!serviceRequestOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Service Request not found with ID: &quot; + request_id);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Check if the service provider with the given ID exists
+<b class="nc">&nbsp;        Optional&lt;ServiceProvider&gt; serviceProviderOptional = serviceProviderRepository.findById(sp_id);</b>
+<b class="nc">&nbsp;        if (!serviceProviderOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Service Provider not found with ID: &quot; + sp_id);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Get the service request and service provider entities
+<b class="nc">&nbsp;        ServiceRequest serviceRequest = serviceRequestOptional.get();</b>
+<b class="nc">&nbsp;        ServiceProvider serviceProvider = serviceProviderOptional.get();</b>
+&nbsp;
+&nbsp;        // Check if the service request already has a service provider assigned
+<b class="nc">&nbsp;        if (serviceRequest.getServiceProvider() != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(&quot;Service Request already assigned to a Service Provider.&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Assign the service provider to the service request
+<b class="nc">&nbsp;        serviceRequest.setServiceProvider(serviceProvider);</b>
+<b class="nc">&nbsp;        serviceRequest.setStage(1);</b>
+<b class="nc">&nbsp;        serviceRequestRepository.save(serviceRequest);</b>
+&nbsp;
+&nbsp;        // Add the service request to the list of myProjects for the service provider
+<b class="nc">&nbsp;        serviceProvider.addServiceRequest(serviceRequest);</b>
+<b class="nc">&nbsp;        serviceProviderRepository.save(serviceProvider);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok(serviceRequest);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/mark-request-complete/{request_id}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Mark Service Request complete&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;?&gt; markRequestComplete(@PathVariable Long request_id){
+&nbsp;        // Check if the service request with the given ID exists
+<b class="nc">&nbsp;        Optional&lt;ServiceRequest&gt; serviceRequestOptional = serviceRequestRepository.findById(request_id);</b>
+<b class="nc">&nbsp;        if (!serviceRequestOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Service Request not found with ID: &quot; + request_id);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        ServiceRequest serviceRequest = serviceRequestOptional.get();</b>
+<b class="nc">&nbsp;        serviceRequest.setStage(2);</b>
+<b class="nc">&nbsp;        serviceRequestRepository.save(serviceRequest);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(serviceRequest);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{request_id}/unassign-service-provider&quot;)
+&nbsp;    @ApiOperation(value = &quot;Unassign Service Provider from Service Request&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; unassignServiceProviderFromRequest(@PathVariable Long request_id) {
+&nbsp;        // Check if the service request with the given ID exists
+<b class="nc">&nbsp;        Optional&lt;ServiceRequest&gt; serviceRequestOptional = serviceRequestRepository.findById(request_id);</b>
+<b class="nc">&nbsp;        if (!serviceRequestOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Service Request not found with ID: &quot; + request_id);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Get the service request entity
+<b class="nc">&nbsp;        ServiceRequest serviceRequest = serviceRequestOptional.get();</b>
+&nbsp;
+&nbsp;        // Check if the service request has a service provider assigned
+<b class="nc">&nbsp;        if (serviceRequest.getServiceProvider() == null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(&quot;Service Request is not assigned to any Service Provider.&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Get the assigned service provider
+<b class="nc">&nbsp;        ServiceProvider assignedServiceProvider = serviceRequest.getServiceProvider();</b>
+&nbsp;
+&nbsp;        // Unassign the service provider from the service request
+<b class="nc">&nbsp;        serviceRequest.setServiceProvider(null);</b>
+<b class="nc">&nbsp;        serviceRequest.setStage(0);</b>
+<b class="nc">&nbsp;        serviceRequestRepository.save(serviceRequest);</b>
+&nbsp;
+&nbsp;        // Remove the service request from the list of myProjects for the service provider
+<b class="nc">&nbsp;        assignedServiceProvider.removeServiceRequest(serviceRequest);</b>
+<b class="nc">&nbsp;        serviceProviderRepository.save(assignedServiceProvider);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.noContent().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/by-stage/{stage}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Service Requests by Stage&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;List&lt;ServiceRequest&gt;&gt; getServiceRequestsByStage(@PathVariable int stage) {
+&nbsp;        //make check for stage value should be only 0,1,2
+<b class="nc">&nbsp;        List&lt;ServiceRequest&gt; serviceRequests = serviceRequestRepository.findByStage(stage);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(serviceRequests);</b>
+&nbsp;    }
+&nbsp;    @GetMapping(&quot;/by-user-and-stage/{userId}/{stage}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Service Requests for User and Stage&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;?&gt; getServiceRequestsForUserAndStage(
+&nbsp;            @PathVariable Long userId,
+&nbsp;            @PathVariable int stage
+&nbsp;    ) {
+<b class="nc">&nbsp;        Optional&lt;User&gt; userOptional = userRepository.findById(userId);</b>
+<b class="nc">&nbsp;        if (userOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            if(stage&gt;2 || stage&lt;0){</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Stage value needs to be between[0,2]&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            User user = userOptional.get();</b>
+<b class="nc">&nbsp;            List&lt;ServiceRequest&gt; serviceRequests = serviceRequestRepository.findByUserAndStage(user, stage);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(serviceRequests);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;User not found with ID: &quot; + userId);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/by-service-provider-and-stage/{providerId}/{stage}&quot;)
+&nbsp;    @ApiOperation(value = &quot;Get Service Requests for Service Provider and Stage&quot;, response = ServiceRequest.class)
+&nbsp;    public ResponseEntity&lt;?&gt; getServiceRequestsForServiceProviderAndStage(
+&nbsp;            @PathVariable Long providerId,
+&nbsp;            @PathVariable int stage
+&nbsp;    ) {
+&nbsp;        //check if SP is present
+<b class="nc">&nbsp;        Optional&lt;ServiceProvider&gt; serviceProviderOptional = serviceProviderRepository.findById(providerId);</b>
+<b class="nc">&nbsp;        if (serviceProviderOptional.isPresent()) {</b>
+&nbsp;            //check if stage is in bounds
+<b class="nc">&nbsp;            if(stage&gt;2 || stage&lt;0){</b>
+<b class="nc">&nbsp;                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Stage value needs to be between[0,2]&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            ServiceProvider serviceProvider = serviceProviderOptional.get();</b>
+<b class="nc">&nbsp;            List&lt;ServiceRequest&gt; serviceRequests = serviceRequestRepository.findByServiceProviderAndStage(serviceProvider, stage);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(serviceRequests);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Service Provider not found with ID: &quot; + providerId);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;{request_id}/add-review&quot;)
+&nbsp;    @ApiOperation(value = &quot;Give review to a Service Request&quot;, response = Review.class)
+&nbsp;    public ResponseEntity&lt;?&gt; addReview(@PathVariable Long request_id,
+&nbsp;                                       @RequestBody Review review){
+&nbsp;
+&nbsp;        //check if Service Request Exists
+<b class="nc">&nbsp;        Optional&lt;ServiceRequest&gt; serviceRequestOptional = serviceRequestRepository.findById(request_id);</b>
+<b class="nc">&nbsp;        if (!serviceRequestOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Service Request not found with ID: &quot; + request_id);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Get the service request entity
+<b class="nc">&nbsp;        ServiceRequest serviceRequest = serviceRequestOptional.get();</b>
+&nbsp;
+&nbsp;        // Check if the service request has a service provider assigned
+<b class="nc">&nbsp;        if (serviceRequest.getServiceProvider() == null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(&quot;Service Request is not assigned to any Service Provider.&quot;);</b>
+&nbsp;        }
+&nbsp;        // Get the assigned service provider
+<b class="nc">&nbsp;        ServiceProvider serviceProvider = serviceRequest.getServiceProvider();</b>
+<b class="nc">&nbsp;        review.setServiceProvider(serviceProvider);</b>
+&nbsp;
+&nbsp;        //add review to service request
+<b class="nc">&nbsp;        serviceRequest.setReview(review);</b>
+&nbsp;
+&nbsp;        //add the review to the SP&#39;s list of reviews and update rating
+<b class="nc">&nbsp;        serviceProvider.addReview(review);</b>
+&nbsp;
+<b class="nc">&nbsp;        reviewRepository.save(review);</b>
+<b class="nc">&nbsp;        serviceProviderRepository.save(serviceProvider);</b>
+<b class="nc">&nbsp;        serviceRequestRepository.save(serviceRequest);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok().body(review);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-07 23:06</div>
+</div>
+</body>
+</html>
