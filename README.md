@@ -1,10 +1,10 @@
 Hello everyone
 
 About:
-This is my personal project findRight. It is a mobile application that serves as a multisided platform. 
-This application comprises two kinds of users. A normal user and a service provider. A normal user can make requests from their end eg: plumbing, gardening, etc.
+This is my personal project FindRight. It is a mobile application that serves as a multisided platform. FindRight aims to connect its users with skilled professionals who can get the job done and, at the same time, provide a bigger market for freelancers and blue-collar workers to progress in.
+This application comprises two kinds of users: a normal user and a service provider. A normal user can make requests from their end eg: plumbing, gardening, etc.
 A Service Provider skilled in that particular task can view and accept those requests. (A similar comparable model is Uber but for blue-collar workers.) 
-This helps users achieve their service needs and provides a market expansion for skilled workers. 
+This helps users meet their service needs and expands the market for skilled professionals. 
 
 Contributors: Dhairya, Jashwanth, Subham, Chiran
 
